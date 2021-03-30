@@ -2,6 +2,7 @@ import sys, pygame
 from pygame.locals import *
 from random import *
 from pygame import rect
+from pickle import FALSE
 
 
 pygame.init()
@@ -11,7 +12,7 @@ size = (800, 600)
 screen = pygame.display.set_mode(size)
 
 
-pygame.display.set_caption("Papa Bolinhas")
+pygame.display.set_caption("Breakout")
 
 
 #CORES BASICAS
@@ -30,39 +31,49 @@ LIGHT_BLUE = (155,202,242)
 LIGHT_YELLOW = (250,205,9)
 SALMON = (217, 93, 48) 
 
-brickVector=[]
+
 cores = [LIGHT_PINK,MEDIUM_BLUE,LIGHT_BLUE,LIGHT_YELLOW,SALMON]
 
 # def brickPosition(x,y):
   
   
-  
+print(pygame.font.get_fonts())  
 
 
-font = pygame.font.SysFont('sans',40)
+font = pygame.font.SysFont('cambria',30)
 placar = 0
 
-#FASE1
-
+#BLOCOS
+brickVector=[]
 brickPosicaoX = [180, 270, 360, 450, 540, 90  , 180, 270, 360, 450, 540, 630 ,180, 270, 360, 450, 540]
 brickPosicaoY = [200, 200, 200, 200, 200, 230, 230, 230, 230, 230, 230, 230 ,260, 260, 260, 260, 260]
 brickVida=[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 brickCor=[cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1]]
 
 
+
+#PLATAFORMA
 posicaoPlataforma = [350,550]
-tamanhoPlataforma = [100,30]
+tamanhoPlataforma = [100,26]
 velocidadePlataforma = 5
 
+#JOGADOR
+vidaJogador = 3
 
 
+
+
+#BOLAS
+bolas = [1,1,1]
+posicao_bolas = [0,0]
+cor = RED
+velocidadeBola = -5
+
+
+#FLAGS
 criar = True
 rebater = False
-
-X_vermelho = 0
-Y_vermelho = 0
-
-cor = RED
+inicio = True
 
 
 
@@ -72,6 +83,8 @@ clock = pygame.time.Clock()
 CLOCKTICK = pygame.USEREVENT+1
 pygame.time.set_timer(CLOCKTICK, 1000) # configurado o timer do Pygame para execuÃ§Ã£o a cada 1 segundo
 temporizador = 60
+
+
 
 #----------------PARTE 2-------------------------------------
 
@@ -92,14 +105,25 @@ while True:
 
 
     if temporizador == 0:
-        
-        break
+      break
 
+    if (len(bolas) == 0):
+      break
+    
+    if (inicio == True):
+      posicao_bolas[0]= posicaoPlataforma[0]+50
+      posicao_bolas[1]= posicaoPlataforma[1]-20 
+    
+ 
     
     pressed = pygame.key.get_pressed()
 
    
-    
+    if (pressed[pygame.K_SPACE]): 
+      posicao_bolas[1]=posicaoPlataforma[1]-velocidadeBola
+      inicio=False
+      
+      
     if pressed[pygame.K_LEFT]: posicaoPlataforma[0] -= velocidadePlataforma
     if pressed[pygame.K_RIGHT]: posicaoPlataforma[0] += velocidadePlataforma
     
@@ -122,31 +146,45 @@ while True:
     
     j=0
     while (j < len(brickPosicaoX)):
-      if (brickPosicaoY[j]+15>= Y_vermelho and brickPosicaoY[j]-15 <=Y_vermelho) and (brickPosicaoX[j]+105 >= X_vermelho and brickPosicaoX[j]-15<=X_vermelho):
+      if ((brickPosicaoY[j]+15>= posicao_bolas[1] and brickPosicaoY[j]-15 <=posicao_bolas[1]) and (brickPosicaoX[j]+105 >= posicao_bolas[0] and brickPosicaoX[j]-15<=posicao_bolas[0])):
         brickVida[j]-=1
         brickCor[j] = cores[2]
-        rebater = True
+        if (posicao_bolas[1] < 0):
+          velocidadeBola = 5
+        if (posicao_bolas[1]>= 0):
+          velocidadeBola = -velocidadeBola   
         print(str(brickVida[j]))
-        if(brickVida[j]==0):
-          del(brickPosicaoX[j])
-          del(brickPosicaoY[j])
-          del(brickVida[j])
-          del(brickCor[j])
+        
+      if(brickVida[j]==0):
+        del(brickPosicaoX[j])
+        del(brickPosicaoY[j])
+        del(brickVida[j])
+        del(brickCor[j])
+          
       j+=1  
     
+      
+    
+    k=0
+    posicaoVida = [670,80]
+    while (k < vidaJogador):
+      pygame.draw.circle(screen, LIGHT_YELLOW,(posicaoVida[0], posicaoVida[1]) ,10)
+      posicaoVida[0]+=30  
+      k+=1
+      
       
      
     plataforma = pygame.draw.rect(screen,(LIGHT_PINK),(posicaoPlataforma[0],posicaoPlataforma[1],tamanhoPlataforma[0],tamanhoPlataforma[1]))
    
     
     
-    if rebater== False:
-      Y_vermelho += 2
-    
-    
-    if rebater==True:
-      Y_vermelho -= 2
-      
+#     if rebater== False:
+#         Y_vermelho += 2
+#      
+#      
+#     if rebater==True:
+#         Y_vermelho -= 2
+       
        
     
     if criar == True:
@@ -156,35 +194,38 @@ while True:
         criar = False
         
 
-    
    
-   
-    posicaoBolasVermelhas = [X_vermelho,Y_vermelho]
-   
-   
-    bola = pygame.draw.circle(screen, cor, posicaoBolasVermelhas, 10)
+    posicao_bolas[1] = posicao_bolas[1]+velocidadeBola
+    bola = pygame.draw.circle(screen, cor, (posicao_bolas[0], posicao_bolas[1]), 10)
 
    
+   
+    if Y_vermelho <= 0:
+      Y_vermelho -= 2
     
-
+   
+      
     
     
-    if (posicaoPlataforma[1]+15>= Y_vermelho and posicaoPlataforma[1]-15 <=Y_vermelho) and (posicaoPlataforma[0]+115 >= X_vermelho and posicaoPlataforma[0]-15<=X_vermelho):
+    if (posicaoPlataforma[1]+15>= posicao_bolas[1] and posicaoPlataforma[1]-15 <=posicao_bolas[1]) and (posicaoPlataforma[0]+115 >= posicao_bolas[0] and posicaoPlataforma[0]-15<=posicao_bolas[0]) and (inicio == False):
       print(str(posicaoPlataforma[0]))
       print(str(X_vermelho))
-      rebater = True
+#       velocidadeBola = -velocidadeBola
+      
         
-        
+    if Y_vermelho > 601:
+      vidaJogador-=1
+      criar = True    
 
     
    
     
-    score1 = font.render('Placar '+str(placar), True, (WHITE))
-    screen.blit(score1, (600, 50))
+#     score1 = font.render('Placar '+str(placar), True, (WHITE))
+#     screen.blit(score1, (600, 50))
 
-   
-    timer1 = font.render('Tempo ' + str(temporizador), True, (LIGHT_YELLOW))
-    screen.blit(timer1, (50, 50))
+#     nome_fase = font.render("LVL 01", True, (LIGHT_YELLOW)) 
+# #     timer1 = font.render('Tempo ' + str(temporizador), True, (LIGHT_YELLOW))
+#     screen.blit(nome_fase, (50, 50))
         
 
     pygame.display.flip()
@@ -192,9 +233,8 @@ while True:
    
     clock.tick(60)
     
-    if (Y_vermelho >600 or Y_vermelho<0):
-      rebater = False
-      criar = True
+   
+            
 
 
 frame = pygame.draw.rect(screen, (WHITE), Rect((0, 0), (800, 600)))
