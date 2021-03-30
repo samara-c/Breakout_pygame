@@ -58,13 +58,13 @@ tamanhoPlataforma = [100,26]
 velocidadePlataforma = 5
 
 #JOGADOR
-vidaJogador = 3
-
+vidaJogador = 2
+bolas = [1,1,1]
 
 
 
 #BOLAS
-bolas = [1,1,1]
+
 posicao_bolas = [0,0]
 cor = RED
 velocidadeBola = -5
@@ -144,14 +144,16 @@ while True:
       brick = pygame.draw.rect(screen,(brickCor[i]),(brickPosicaoX[i],brickPosicaoY[i],80,20))
       i+=1
     
+    
+    #CHECA COLISAO
     j=0
     while (j < len(brickPosicaoX)):
       if ((brickPosicaoY[j]+15>= posicao_bolas[1] and brickPosicaoY[j]-15 <=posicao_bolas[1]) and (brickPosicaoX[j]+105 >= posicao_bolas[0] and brickPosicaoX[j]-15<=posicao_bolas[0])):
         brickVida[j]-=1
         brickCor[j] = cores[2]
-        if (posicao_bolas[1] < 0):
-          velocidadeBola = 5
-        if (posicao_bolas[1]>= 0):
+#         if (posicao_bolas[1] <= 0):
+#           velocidadeBola = velocidadeBola
+        if (posicao_bolas[1]> 0):
           velocidadeBola = -velocidadeBola   
         print(str(brickVida[j]))
         
@@ -167,7 +169,7 @@ while True:
     
     k=0
     posicaoVida = [670,80]
-    while (k < vidaJogador):
+    while (k < len(bolas)):
       pygame.draw.circle(screen, LIGHT_YELLOW,(posicaoVida[0], posicaoVida[1]) ,10)
       posicaoVida[0]+=30  
       k+=1
@@ -209,13 +211,15 @@ while True:
     
     if (posicaoPlataforma[1]+15>= posicao_bolas[1] and posicaoPlataforma[1]-15 <=posicao_bolas[1]) and (posicaoPlataforma[0]+115 >= posicao_bolas[0] and posicaoPlataforma[0]-15<=posicao_bolas[0]) and (inicio == False):
       print(str(posicaoPlataforma[0]))
-      print(str(X_vermelho))
-#       velocidadeBola = -velocidadeBola
+      if (velocidadeBola >0):
+        velocidadeBola = -velocidadeBola
+#
       
         
-    if Y_vermelho > 601:
+    if posicao_bolas[1] > 601:
+      bolas.pop(vidaJogador)
       vidaJogador-=1
-      criar = True    
+      inicio = True
 
     
    
