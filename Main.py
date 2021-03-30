@@ -57,7 +57,7 @@ brickCor=[cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1
 #PLATAFORMA
 posicaoPlataforma = [350,550]
 tamanhoPlataforma = [100,26]
-velocidadePlataforma = 5
+velocidadePlataforma = 6
 
 #JOGADOR
 vidaJogador = 2
@@ -69,7 +69,7 @@ bolas = [1,1,1]
 
 posicao_bolas = [0,0]
 cor = RED
-velocidadeBola = -5
+velocidadeBola = [-5,-5]
 
 
 #FLAGS
@@ -113,8 +113,11 @@ while True:
       break
     
     if (inicio == True):
-      posicao_bolas[0]= posicaoPlataforma[0]+50
-      posicao_bolas[1]= posicaoPlataforma[1]-20 
+      posicao_bolas= [0,0]
+      posicao_bolas[0]= posicaoPlataforma[0]+56
+      posicao_bolas[1]= posicaoPlataforma[1]-10
+      if (posicao_bolas[1] != posicaoPlataforma[1]-10):
+        posicao_bolas[1]-=10 
     
  
     
@@ -122,7 +125,7 @@ while True:
 
    
     if (pressed[pygame.K_SPACE]): 
-      posicao_bolas[1]=posicaoPlataforma[1]-velocidadeBola
+      posicao_bolas[1]=posicaoPlataforma[1]+velocidadeBola[1]-5
       inicio=False
       
       
@@ -156,7 +159,8 @@ while True:
 #         if (posicao_bolas[1] <= 0):
 #           velocidadeBola = velocidadeBola
         if (posicao_bolas[1]> 0):
-          velocidadeBola = -velocidadeBola   
+          velocidadeBola[1] = -velocidadeBola[1]
+          velocidadeBola[0] = velocidadeBola[0]   
         print(str(brickVida[j]))
         
       if(brickVida[j]==0):
@@ -198,8 +202,8 @@ while True:
         criar = False
         
 
-   
-    posicao_bolas[1] = posicao_bolas[1]+velocidadeBola
+    posicao_bolas[0] = posicao_bolas[0]+velocidadeBola[0]   
+    posicao_bolas[1] = posicao_bolas[1]+velocidadeBola[1]
     bola = pygame.draw.circle(screen, cor, (posicao_bolas[0], posicao_bolas[1]), 10)
 
    
@@ -213,12 +217,15 @@ while True:
     
     if (posicaoPlataforma[1]+15>= posicao_bolas[1] and posicaoPlataforma[1]-15 <=posicao_bolas[1]) and (posicaoPlataforma[0]+115 >= posicao_bolas[0] and posicaoPlataforma[0]-15<=posicao_bolas[0]) and (inicio == False):
       print(str(posicaoPlataforma[0]))
-      if (velocidadeBola >0):
-        velocidadeBola = -velocidadeBola
+      if (velocidadeBola[1] >0):
+        velocidadeBola[1] = -velocidadeBola[1]
 #
    
     if posicao_bolas[1] < 10:
-      velocidadeBola = -velocidadeBola 
+      velocidadeBola[1] = -velocidadeBola[1] 
+      
+    if (posicao_bolas[0] < 15) or (posicao_bolas[0] > 785) :
+      velocidadeBola[0] = -velocidadeBola[0]  
       
         
     if posicao_bolas[1] > 601:
