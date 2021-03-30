@@ -13,6 +13,8 @@ screen = pygame.display.set_mode(size)
 
 
 pygame.display.set_caption("Breakout")
+pygame.display.set_icon(pygame.image.load('icon.png'))
+
 
 
 #CORES BASICAS
@@ -40,15 +42,15 @@ cores = [LIGHT_PINK,MEDIUM_BLUE,LIGHT_BLUE,LIGHT_YELLOW,SALMON]
 print(pygame.font.get_fonts())  
 
 
-font = pygame.font.SysFont('cambria',30)
+font = pygame.font.SysFont('arial',30)
 placar = 0
 
 #BLOCOS
 brickVector=[]
-brickPosicaoX = [180, 270, 360, 450, 540, 90  , 180, 270, 360, 450, 540, 630 ,180, 270, 360, 450, 540]
-brickPosicaoY = [200, 200, 200, 200, 200, 230, 230, 230, 230, 230, 230, 230 ,260, 260, 260, 260, 260]
-brickVida=[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
-brickCor=[cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1]]
+brickPosicaoX = [270,360,450,180, 270, 360, 450, 540, 90  , 180, 270, 360, 450, 540, 630 ,180, 270, 360, 450, 540,270,360,450]
+brickPosicaoY = [150,150,150,180, 180, 180, 180, 180, 210, 210, 210, 210, 210, 210, 210 ,240, 240, 240, 240, 240,270,270,270]
+brickVida=[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+brickCor=[cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1]]
 
 
 
@@ -81,7 +83,7 @@ clock = pygame.time.Clock()
 
 
 CLOCKTICK = pygame.USEREVENT+1
-pygame.time.set_timer(CLOCKTICK, 1000) # configurado o timer do Pygame para execuÃ§Ã£o a cada 1 segundo
+pygame.time.set_timer(CLOCKTICK, 1000) # configurado o timer do Pygame para execução a cada 1 segundo
 temporizador = 60
 
 
@@ -168,7 +170,7 @@ while True:
       
     
     k=0
-    posicaoVida = [670,80]
+    posicaoVida = [670,60]
     while (k < len(bolas)):
       pygame.draw.circle(screen, LIGHT_YELLOW,(posicaoVida[0], posicaoVida[1]) ,10)
       posicaoVida[0]+=30  
@@ -214,13 +216,17 @@ while True:
       if (velocidadeBola >0):
         velocidadeBola = -velocidadeBola
 #
+   
+    if posicao_bolas[1] < 10:
+      velocidadeBola = -velocidadeBola 
       
         
     if posicao_bolas[1] > 601:
       bolas.pop(vidaJogador)
       vidaJogador-=1
       inicio = True
-
+   
+      
     
    
     
@@ -241,12 +247,9 @@ while True:
             
 
 
-frame = pygame.draw.rect(screen, (WHITE), Rect((0, 0), (800, 600)))
-
-
-textofinal = font.render('Fim de Jogo - Placar final: ' + str(placar), True, (RED))
-size = font.size(str(textofinal))
-screen.blit(textofinal, (size[0]/2., size[1]/2.))
+frame = pygame.draw.rect(screen, (BLACK), Rect((0, 0), (800, 600)))
+textofinal = font.render(("Fim"), True, (SALMON))
+screen.blit(textofinal, (400, 300))
 
 
 
