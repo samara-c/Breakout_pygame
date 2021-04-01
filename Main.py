@@ -42,17 +42,20 @@ cores = [LIGHT_PINK,MEDIUM_BLUE,LIGHT_BLUE,LIGHT_YELLOW,SALMON]
 print(pygame.font.get_fonts())  
 
 
-font = pygame.font.SysFont('arial',30)
+font = pygame.font.SysFont('inkfree',30)
 placar = 0
 
 #BLOCOS
-brickVector=[]
-brickPosicaoX = [270,360,450,180, 270, 360, 450, 540, 90  , 180, 270, 360, 450, 540, 630 ,180, 270, 360, 450, 540,270,360,450]
-brickPosicaoY = [150,150,150,180, 180, 180, 180, 180, 210, 210, 210, 210, 210, 210, 210 ,240, 240, 240, 240, 240,270,270,270]
-brickVida=[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
-brickCor=[cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1]]
 
+brickPosicaoX = [360,270, 360, 450,180, 270, 360, 450, 540,180, 270, 360, 450, 540,270,360,450,360]
+brickPosicaoY = [150,180, 180, 180, 210, 210, 210, 210, 210, 240, 240, 240, 240, 240,270,270,270,300]
+brickVida=[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+brickCor=[cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1],cores[1]]
 
+# print (str(len(brickVida)))
+# print(str(len(brickCor)))
+# print (str(len(brickPosicaoY)))
+# print(str(len(brickPosicaoX)))
 
 #PLATAFORMA
 posicaoPlataforma = [350,550]
@@ -66,18 +69,20 @@ bolas = [1,1,1]
 
 
 #BOLAS
-
 posicao_bolas = [0,0]
-cor = RED
+cor = LIGHT_YELLOW
 velocidadeBola = [-5,-5]
 
 
 #FLAGS
-criar = True
+telaInicial = True
 rebater = False
 inicio = True
+vitoria = False
 
 
+#TELAS
+telaVitoria = " "
 
 clock = pygame.time.Clock()
 
@@ -87,7 +92,11 @@ pygame.time.set_timer(CLOCKTICK, 1000) # configurado o timer do Pygame para exec
 temporizador = 60
 
 
+#SONS
 
+pygame.mixer.init()
+# pygame.mixer.music.load('musica.wav')
+# pygame.mixer.music.play()
 #----------------PARTE 2-------------------------------------
 
 # Loop principal do jogo
@@ -106,37 +115,43 @@ while True:
             temporizador = temporizador -1
 
 
-    if temporizador == 0:
-      break
-
     if (len(bolas) == 0):
       break
+   
+    if (len(brickVida) == 0):
+      telaVitoria = pygame.Surface.copy(screen)
+      vitoria = True
+      break
+    
+    pressed = pygame.key.get_pressed()
     
     if (inicio == True):
-      posicao_bolas= [0,0]
-      posicao_bolas[0]= posicaoPlataforma[0]+56
-      posicao_bolas[1]= posicaoPlataforma[1]-10
-      if (posicao_bolas[1] != posicaoPlataforma[1]-10):
-        posicao_bolas[1]-=10 
+#       posicao_bolas= [0,0]
+      posicao_bolas[0]= posicaoPlataforma[0]+50
+      posicao_bolas[1]= 530
+      print(str(posicao_bolas[1]))
+      
     
  
     
-    pressed = pygame.key.get_pressed()
+    
 
-   
-    if (pressed[pygame.K_SPACE]): 
-      posicao_bolas[1]=posicaoPlataforma[1]+velocidadeBola[1]-5
-      inicio=False
+    if (inicio==True):   
+      if (pressed[pygame.K_SPACE]): 
+        posicao_bolas[1]=posicaoPlataforma[1]+velocidadeBola[1]-5
+        inicio=False
       
       
     if pressed[pygame.K_LEFT]: posicaoPlataforma[0] -= velocidadePlataforma
     if pressed[pygame.K_RIGHT]: posicaoPlataforma[0] += velocidadePlataforma
-    
+   
+   
+   #GARANTE QUE A PLATAFORMA NAO PASSE DOS LIMITES X DA TELA 
     if (posicaoPlataforma[0]+100 > 800):
-      posicaoPlataforma[0]=posicaoPlataforma[0]-5
+      posicaoPlataforma[0]=700
     
     if(posicaoPlataforma[0] < 0):
-      posicaoPlataforma[0]=posicaoPlataforma[0]+5  
+      posicaoPlataforma[0]=0  
       
     
 
@@ -155,6 +170,8 @@ while True:
     while (j < len(brickPosicaoX)):
       if ((brickPosicaoY[j]+15>= posicao_bolas[1] and brickPosicaoY[j]-15 <=posicao_bolas[1]) and (brickPosicaoX[j]+105 >= posicao_bolas[0] and brickPosicaoX[j]-15<=posicao_bolas[0])):
         brickVida[j]-=1
+        pygame.mixer.music.load('ponto.wav')
+        pygame.mixer.music.play()
         brickCor[j] = cores[2]
 #         if (posicao_bolas[1] <= 0):
 #           velocidadeBola = velocidadeBola
@@ -181,7 +198,7 @@ while True:
       k+=1
       
       
-     
+   
     plataforma = pygame.draw.rect(screen,(LIGHT_PINK),(posicaoPlataforma[0],posicaoPlataforma[1],tamanhoPlataforma[0],tamanhoPlataforma[1]))
    
     
@@ -194,26 +211,17 @@ while True:
 #         Y_vermelho -= 2
        
        
-    
-    if criar == True:
-        X_vermelho = randint(40,760)
-        Y_vermelho = 20
-        cor = LIGHT_YELLOW
-        criar = False
         
 
-    posicao_bolas[0] = posicao_bolas[0]+velocidadeBola[0]   
-    posicao_bolas[1] = posicao_bolas[1]+velocidadeBola[1]
+    
+    
+    if (inicio != True):
+      posicao_bolas[0] = posicao_bolas[0]+velocidadeBola[0]   
+      posicao_bolas[1] = posicao_bolas[1]+velocidadeBola[1]
+      
     bola = pygame.draw.circle(screen, cor, (posicao_bolas[0], posicao_bolas[1]), 10)
 
-   
-   
-    if Y_vermelho <= 0:
-      Y_vermelho -= 2
-    
-   
-      
-    
+ 
     
     if (posicaoPlataforma[1]+15>= posicao_bolas[1] and posicaoPlataforma[1]-15 <=posicao_bolas[1]) and (posicaoPlataforma[0]+115 >= posicao_bolas[0] and posicaoPlataforma[0]-15<=posicao_bolas[0]) and (inicio == False):
       print(str(posicaoPlataforma[0]))
@@ -231,6 +239,7 @@ while True:
     if posicao_bolas[1] > 601:
       bolas.pop(vidaJogador)
       vidaJogador-=1
+      
       inicio = True
    
       
@@ -253,11 +262,21 @@ while True:
    
             
 
+if (vitoria == True):
+  vitoria = pygame.image.load("victory.png")
+  vitoria = pygame.transform.scale(vitoria,(100,100))
+  screen.fill((0,0,0))
+  screen.blit(vitoria, (350, 150))
+  textofinal = font.render(("Thank you for playing!"), True, (WHITE))
+  screen.blit(textofinal, (260, 270)) 
 
-frame = pygame.draw.rect(screen, (BLACK), Rect((0, 0), (800, 600)))
-textofinal = font.render(("Fim"), True, (SALMON))
-screen.blit(textofinal, (400, 300))
-
+if (vitoria == False):  
+  pygame.mixer.music.load('fim_de_jogo.WAV')
+  pygame.mixer.music.play()
+  frame = pygame.draw.rect(screen, (BLACK), Rect((0, 0), (800, 600)))
+  textofinal = font.render(("End game!"), True, (WHITE))
+  screen.blit(textofinal, (330,270))
+  
 
 
 pygame.display.flip()
